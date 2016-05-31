@@ -24,7 +24,7 @@ class Stack {
         print (floatArray)
     }
     
-    func count() {
-        floatArray.count
+    func count() -> Int {
+        return floatArray.count
     }
 }

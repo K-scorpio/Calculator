@@ -34,6 +34,7 @@ class ViewController: UIViewController {
     }
     
     func setUpbuttons() {
+
         label.backgroundColor = .blackColor()
         buttonZero.backgroundColor = .grayColor()
         buttonOne.backgroundColor = .grayColor()
@@ -68,6 +69,30 @@ class ViewController: UIViewController {
         view.addSubview(buttonPlus)
         view.addSubview(buttonEnter)
         
+        displayLabel.textAlignment = .Right
+        displayLabel.font = .systemFontOfSize(50)
+        displayLabel.text = "0"
+        displayLabel.textColor = .whiteColor()
+        displayLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(displayLabel)
+        
+        
+        buttonZero.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonOne.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonTwo.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonThree.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonFour.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonFive.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonSix.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonSeven.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonEight.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonNine.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonSlash.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonMultiply.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonPlus.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonDash.addTarget(self, action: #selector(addNumbers), forControlEvents: .TouchUpInside)
+        buttonEnter.addTarget(self, action: #selector(enter), forControlEvents: .TouchUpInside)
+        
         buttonZero.setTitle("0", forState: .Normal)
         buttonOne.setTitle("1", forState: .Normal)
         buttonTwo.setTitle("2", forState: .Normal)
@@ -78,10 +103,10 @@ class ViewController: UIViewController {
         buttonSeven.setTitle("7", forState: .Normal)
         buttonEight.setTitle("8", forState: .Normal)
         buttonNine.setTitle("9", forState: .Normal)
-        buttonSlash.setTitle("/", forState: .Normal)
-        buttonMultiply.setTitle("*", forState: .Normal)
+        buttonSlash.setTitle("÷", forState: .Normal)
+        buttonMultiply.setTitle("✕", forState: .Normal)
         buttonPlus.setTitle("+", forState: .Normal)
-        buttonDash.setTitle("-", forState: .Normal)
+        buttonDash.setTitle("−", forState: .Normal)
         buttonEnter.setTitle("=", forState: .Normal)
         
         buttonZero.titleLabel?.font = UIFont(name: "Avenir-Roman", size: 40)
@@ -99,7 +124,6 @@ class ViewController: UIViewController {
         buttonDash.titleLabel?.font = UIFont(name: "Avenir-Roman", size: 40)
         buttonPlus.titleLabel?.font = UIFont(name: "Avenir-Roman", size: 40)
         buttonEnter.titleLabel?.font = UIFont(name: "Avenir-Roman", size: 40)
-        
         
         buttonZero.setTitleColor(.lightGrayColor(), forState: .Normal)
         buttonOne.setTitleColor(.lightGrayColor(), forState: .Normal)
@@ -236,7 +260,73 @@ class ViewController: UIViewController {
         view.addConstraints([buttonZeroToView, buttonEnterToButtonZero, buttonPlusToButtonEnter, buttonPlusToView, buttonZeroToButtonOne, buttonEnterToButtonThree, buttonPlusToButtonDash, buttonZeroToBottom, buttonEnterToBottom, buttonPlusToBottom])
         
         }
+    
+    var isTyping: Bool = false
+    
+    var stack = Stack()
+    
+    var displayLabel = UILabel()
+    var displayValue: Float {
+        get {
+            let text = displayLabel.text ?? "0"
+            return (text as NSString).floatValue
+        } set {
+            displayLabel.text = "\(newValue)"
+            isTyping = false
+        }
     }
+    
+    func addNumbers(button: UIButton) {
+        guard let number = button.currentTitle else {
+            return
+        }
+        if isTyping {
+            let displayText = displayLabel.text ?? ""
+            displayLabel.text = displayText + number
+        } else {
+            displayLabel.text = number
+            isTyping = true
+        }
+    }
+    
+    func enter() {
+        isTyping = false
+        stack.push(displayValue)
+        stack.log()
+    }
+    
+    func operate(button: UIButton) {
+        
+        guard let operation = button.currentTitle else {
+            return
+        }
+        if isTyping == true {
+            enter()
+        }
+        
+        if stack.count() >= 2 {
+            let float1 = stack.pop()!
+            let float2 = stack.pop()!
+            
+            switch operation {
+            case "÷":
+                displayValue = float2 / float1
+            case "+":
+                displayValue = float2 + float1
+            case "−":
+                displayValue = float2 - float1
+            case "✕":
+                displayValue = float2 * float1
+            default:
+                stack.push(float1)
+                stack.push(float2)
+                
+            }
+            enter()
+        }
+    }
+}
+
 
 //buttonZero
 //buttonOne
